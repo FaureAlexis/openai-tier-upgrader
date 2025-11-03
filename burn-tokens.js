@@ -47,55 +47,160 @@ Configuration:
 Starting token burning session...
 `);
 
-// Generate a long prompt to maximize token usage
+// Generate dynamic, varied prompts to avoid prompt caching
 function generateLongPrompt(iteration) {
-  return `You are a helpful assistant. This is request #${iteration}.
+  const timestamp = Date.now();
+  const randomSeed = Math.random().toString(36).substring(7);
 
-Please analyze and provide detailed insights on the following topics:
-1. Explain the concept of artificial intelligence and machine learning in detail
-2. Discuss the history of computing from the 1940s to present day
-3. Describe various programming paradigms including functional, object-oriented, and procedural
-4. Analyze the evolution of web technologies from HTML1 to modern frameworks
-5. Explain database design principles and normalization
-6. Discuss network protocols and the OSI model
-7. Describe cloud computing architectures and microservices
-8. Analyze cybersecurity best practices and common vulnerabilities
-9. Discuss data structures and algorithms complexity analysis
-10. Explain distributed systems and CAP theorem
+  const topicCategories = [
+    // Tech topics
+    [
+      'artificial intelligence and neural network architectures',
+      'quantum computing and its practical applications',
+      'blockchain technology and distributed ledger systems',
+      'edge computing and IoT infrastructure',
+      'serverless architecture and function-as-a-service platforms'
+    ],
+    // Science topics
+    [
+      'renewable energy sources and sustainability challenges',
+      'genetic engineering and CRISPR technology ethics',
+      'climate change mitigation strategies worldwide',
+      'space exploration and colonization possibilities',
+      'nanotechnology applications in medicine'
+    ],
+    // Business topics
+    [
+      'digital transformation strategies for enterprises',
+      'startup ecosystems and venture capital trends',
+      'remote work culture and productivity optimization',
+      'agile methodologies and DevOps practices',
+      'customer experience design and user journey mapping'
+    ],
+    // Philosophy topics
+    [
+      'ethics in artificial intelligence development',
+      'digital privacy rights in modern society',
+      'impact of social media on human behavior',
+      'future of work and automation concerns',
+      'sustainable development and circular economy models'
+    ]
+  ];
 
-Please provide comprehensive answers with examples for each topic. Make your response as detailed and thorough as possible, including code examples, diagrams descriptions, and real-world use cases.`;
+  // Randomly select a category and shuffle topics
+  const categoryIndex = (iteration + timestamp) % topicCategories.length;
+  const topics = [...topicCategories[categoryIndex]];
+
+  // Shuffle topics using Fisher-Yates algorithm with timestamp as seed
+  for (let i = topics.length - 1; i > 0; i--) {
+    const j = Math.floor((Math.sin(timestamp + i) + 1) * i / 2);
+    [topics[i], topics[j]] = [topics[j], topics[i]];
+  }
+
+  const contextPrefixes = [
+    `As an expert analyst with ${10 + (iteration % 20)} years of experience`,
+    `From a ${['technical', 'strategic', 'academic', 'practical'][iteration % 4]} perspective`,
+    `Considering recent developments in ${new Date().getFullYear()}`,
+    `Drawing from both theoretical knowledge and real-world applications`,
+    `With focus on innovation and future implications`
+  ];
+
+  const analysisStyles = [
+    'detailed technical analysis with specific examples',
+    'comprehensive overview with historical context',
+    'in-depth exploration with case studies',
+    'critical evaluation with pros and cons',
+    'forward-looking analysis with predictions'
+  ];
+
+  const requestTypes = [
+    'Provide a thorough explanation',
+    'Analyze comprehensively',
+    'Explore in detail',
+    'Examine extensively',
+    'Discuss at length'
+  ];
+
+  const prefix = contextPrefixes[iteration % contextPrefixes.length];
+  const style = analysisStyles[iteration % analysisStyles.length];
+  const requestType = requestTypes[iteration % requestTypes.length];
+
+  return `${prefix}, session #${iteration}-${randomSeed} (timestamp: ${timestamp}):
+
+${requestType} the following topics with ${style}:
+
+1. ${topics[0]} - Include current trends, challenges, and emerging solutions
+2. ${topics[1]} - Discuss implementation strategies and best practices
+3. ${topics[2]} - Analyze impact on industry and society
+4. ${topics[3]} - Explore technical requirements and limitations
+5. ${topics[4]} - Consider future developments and potential innovations
+
+Additional requirements:
+- Include ${3 + (iteration % 5)} specific real-world examples
+- Reference ${2 + (iteration % 4)} recent studies or developments
+- Provide ${4 + (iteration % 6)} actionable recommendations
+- Address ${3 + (iteration % 3)} potential challenges or concerns
+- Suggest ${2 + (iteration % 5)} areas for further research
+
+Please ensure your response is comprehensive, detailed, and includes concrete examples, data points where relevant, and practical insights. Aim for depth over breadth, providing nuanced analysis rather than surface-level overview.
+
+Random validation code: ${randomSeed}-${Math.floor(Math.random() * 10000)}`;
 }
 
-// Generate creative image prompts
+// Generate creative, varied image prompts to avoid caching
 function generateImagePrompt(iteration) {
-  const themes = [
-    'A futuristic cityscape with flying cars and neon lights',
-    'An abstract representation of artificial intelligence and neural networks',
-    'A serene landscape with mountains, lakes, and colorful sunset',
-    'A cyberpunk street scene with holograms and robots',
-    'An underwater scene with bioluminescent creatures',
-    'A fantasy castle floating in the clouds',
-    'A surreal dreamscape with impossible geometry',
-    'A steampunk laboratory filled with brass machinery',
-    'A cosmic scene with nebulas, galaxies and stars',
-    'A post-apocalyptic cityscape being reclaimed by nature',
+  const timestamp = Date.now();
+  const randomValue = Math.random();
+
+  const subjects = [
+    'futuristic cityscape', 'alien planet landscape', 'underwater civilization',
+    'floating islands', 'crystal cave system', 'ancient temple ruins',
+    'cyberpunk street market', 'bio-luminescent forest', 'steampunk airship',
+    'quantum realm visualization', 'neural network architecture', 'fractal dimension',
+    'robot workshop', 'space station interior', 'magical library'
+  ];
+
+  const atmospheres = [
+    'at golden hour with dramatic lighting', 'during a thunderstorm with lightning',
+    'in bioluminescent glow', 'with volumetric fog and rays of light',
+    'at midnight under starlit sky', 'during sunrise with warm colors',
+    'in misty atmosphere', 'with aurora borealis overhead',
+    'under neon lights', 'in ethereal dreamlike ambiance'
   ];
 
   const styles = [
-    'digital art, highly detailed, 4k',
-    'oil painting, impressionist style',
-    'photorealistic, ultra HD',
-    'concept art, cinematic lighting',
-    'watercolor, ethereal and dreamy',
-    'vector art, vibrant colors',
-    'pencil sketch, detailed shading',
-    '3D render, ray tracing',
+    'hyper-realistic digital art, 8k resolution', 'concept art with cinematic composition',
+    'oil painting in romantic style', 'watercolor with soft gradients',
+    '3D render with ray tracing', 'isometric low-poly design',
+    'cyberpunk aesthetic with neon accents', 'fantasy art with magical elements',
+    'surrealist style with impossible architecture', 'minimalist design with bold colors'
   ];
 
-  const theme = themes[iteration % themes.length];
-  const style = styles[iteration % styles.length];
+  const details = [
+    'intricate mechanical details', 'organic flowing patterns',
+    'geometric sacred geometry', 'dynamic particle effects',
+    'reflective metallic surfaces', 'translucent crystalline structures',
+    'weathered textures', 'holographic overlays'
+  ];
 
-  return `${theme}, ${style}`;
+  const colors = [
+    'vibrant purple and teal palette', 'warm orange and gold tones',
+    'cool blue and silver scheme', 'emerald green and copper accents',
+    'crimson red and black contrast', 'pastel rainbow gradients',
+    'monochromatic with dramatic shadows', 'iridescent color shifts'
+  ];
+
+  // Generate unique combinations based on iteration and timestamp
+  const subjectIdx = (iteration + Math.floor(timestamp / 1000)) % subjects.length;
+  const atmosphereIdx = Math.floor(randomValue * atmospheres.length);
+  const styleIdx = (iteration * 3 + Math.floor(timestamp / 2000)) % styles.length;
+  const detailIdx = (iteration * 7) % details.length;
+  const colorIdx = Math.floor((randomValue + iteration / 100) * colors.length) % colors.length;
+
+  // Add unique identifiers to ensure no caching
+  const uniqueId = `${iteration}-${Math.floor(timestamp / 1000)}-${Math.floor(randomValue * 1000)}`;
+
+  return `${subjects[subjectIdx]} ${atmospheres[atmosphereIdx]}, ${styles[styleIdx]}, featuring ${details[detailIdx]}, ${colors[colorIdx]}, highly detailed, professional composition, trending on artstation, unique piece ${uniqueId}`;
 }
 
 // Stats tracking
