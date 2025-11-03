@@ -98,7 +98,14 @@ bun burn-tokens.js [options]
 
 - `--iterations=<number>` : Number of requests to perform (default: 10)
 
-- `--delay=<ms>` : Delay between each request in milliseconds (default: 1000)
+- `--concurrency=<number>` : Number of parallel requests (default: 10)
+  - Higher values = faster execution
+  - Be careful with rate limits (adjust based on your tier)
+  - Recommended: 10-20 for most tiers
+
+- `--delay=<ms>` : Delay between batches in milliseconds (default: 0)
+  - Only needed if you hit rate limits
+  - Applies between batches, not individual requests
 
 - `--mix-ratio=<text:image>` : Text:image ratio in mixed mode (default: `70:30`)
   - Ex: `70:30` = 70% text, 30% images
@@ -110,17 +117,17 @@ bun burn-tokens.js [options]
 #### Examples
 
 ```bash
-# Custom mixed mode with 50-50 text/images
-bun burn-tokens.js --model=mixed --iterations=30 --mix-ratio=50:50 --delay=1500
+# Custom mixed mode with 50-50 text/images and high concurrency
+bun burn-tokens.js --model=mixed --iterations=30 --mix-ratio=50:50 --concurrency=15
 
 # Image generation only with GPT-Image-1
-bun burn-tokens.js --model=gpt-image-1 --iterations=15 --delay=2000 --verbose
+bun burn-tokens.js --model=gpt-image-1 --iterations=15 --concurrency=10 --verbose
 
-# Text only mode with GPT-5 Mini
-bun burn-tokens.js --model=gpt-5-mini --iterations=20 --delay=1000
+# Text only mode with GPT-5 Mini, maximum speed
+bun burn-tokens.js --model=gpt-5-mini --iterations=100 --concurrency=20
 
-# Aggressive mode to burn tokens quickly
-bun burn-tokens.js --model=mixed --iterations=100 --delay=500 --mix-ratio=60:40
+# Aggressive mode to burn tokens quickly with high parallelization
+bun burn-tokens.js --model=mixed --iterations=200 --concurrency=20 --mix-ratio=60:40
 ```
 
 ## Features
@@ -132,6 +139,10 @@ bun burn-tokens.js --model=mixed --iterations=100 --delay=500 --mix-ratio=60:40
 - **Smart selection:**
   - Automatic rotation between different models in mixed mode
   - Balanced distribution according to configured ratio
+- **High performance:**
+  - Parallel request processing with configurable concurrency
+  - Batch processing for optimal throughput
+  - Significantly faster than sequential execution
 - **Tracking and statistics:**
   - Real-time consumption tracking (tokens + images)
   - Cost estimation by request type

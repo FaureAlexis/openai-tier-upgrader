@@ -22,9 +22,10 @@ const IMAGE_MODELS = {
 const args = process.argv.slice(2);
 const modelArg = args.find(arg => arg.startsWith('--model='))?.split('=')[1] || 'mixed';
 const iterationsArg = parseInt(args.find(arg => arg.startsWith('--iterations='))?.split('=')[1] || '10', 10);
-const delayArg = parseInt(args.find(arg => arg.startsWith('--delay='))?.split('=')[1] || '1000', 10);
+const delayArg = parseInt(args.find(arg => arg.startsWith('--delay='))?.split('=')[1] || '0', 10);
 const verboseArg = args.includes('--verbose');
-const mixRatioArg = args.find(arg => arg.startsWith('--mix-ratio='))?.split('=')[1] || '70:30'; // text:image ratio
+const mixRatioArg = args.find(arg => arg.startsWith('--mix-ratio='))?.split('=')[1] || '70:30';
+const concurrencyArg = parseInt(args.find(arg => arg.startsWith('--concurrency='))?.split('=')[1] || '10', 10);
 
 const selectedModel = MODELS[modelArg] || IMAGE_MODELS[modelArg] || 'mixed';
 const isMixedMode = modelArg === 'mixed' || !MODELS[modelArg] && !IMAGE_MODELS[modelArg];
@@ -41,7 +42,8 @@ console.log(`
 Configuration:
   - Model: ${modelArg}${isMixedMode ? ` (Mixed Mode - ${mixRatioArg})` : ` (${selectedModel})`}
   - Iterations: ${iterationsArg}
-  - Delay: ${delayArg}ms
+  - Concurrency: ${concurrencyArg} parallel requests
+  - Delay: ${delayArg}ms between batches
   - Verbose: ${verboseArg}
 
 Starting token burning session...
@@ -381,14 +383,33 @@ async function burnTokens(iteration) {
   }
 }
 
+// Process requests in parallel batches
+async function processBatch(startIdx, batchSize) {
+  const promises = [];
+  for (let i = 0; i < batchSize && (startIdx + i) <= iterationsArg; i++) {
+    promises.push(burnTokens(startIdx + i));
+  }
+  await Promise.all(promises);
+}
+
 async function main() {
   const startTime = Date.now();
 
-  for (let i = 1; i <= iterationsArg; i++) {
-    await burnTokens(i);
+  // Process requests in parallel batches
+  const totalBatches = Math.ceil(iterationsArg / concurrencyArg);
 
-    // Don't delay after the last iteration
-    if (i < iterationsArg) {
+  for (let batch = 0; batch < totalBatches; batch++) {
+    const startIdx = batch * concurrencyArg + 1;
+    const batchSize = Math.min(concurrencyArg, iterationsArg - (batch * concurrencyArg));
+
+    if (verboseArg) {
+      console.log(`\nProcessing batch ${batch + 1}/${totalBatches} (${batchSize} requests)...`);
+    }
+
+    await processBatch(startIdx, batchSize);
+
+    // Delay between batches (not after last batch)
+    if (batch < totalBatches - 1 && delayArg > 0) {
       await new Promise(resolve => setTimeout(resolve, delayArg));
     }
   }
