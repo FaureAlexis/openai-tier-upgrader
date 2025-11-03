@@ -1,0 +1,32 @@
+{
+  "name": "openai-tier-upgrader",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "burn-tokens.js",
+  "scripts": {
+    "start": "bun burn-tokens.js",
+    "burn": "bun burn-tokens.js",
+    "burn:gpt5": "bun burn-tokens.js --model=gpt-5 --iterations=50 --delay=2000",
+    "burn:mini": "bun burn-tokens.js --model=gpt-5-mini --iterations=100 --delay=1000",
+    "burn:nano": "bun burn-tokens.js --model=gpt-5-nano --iterations=100 --delay=500",
+    "burn:image": "bun burn-tokens.js --model=gpt-image-1 --iterations=50 --delay=2000",
+    "burn:mixed": "bun burn-tokens.js --model=mixed --iterations=100 --delay=1500 --mix-ratio=70:30",
+    "burn:aggressive": "bun burn-tokens.js --model=mixed --iterations=200 --delay=1000 --mix-ratio=60:40"
+  },
+  "keywords": ["openai", "token", "tier", "api", "gpt-5", "gpt-image-1", "automation"],
+  "author": "",
+  "license": "MIT",
+  "description": "Automated OpenAI token consumption tool with text and image generation to help upgrade your API usage tier",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:FaureAlexis/openai-tier-upgrader.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FaureAlexis/openai-tier-upgrader/issues"
+  },
+  "homepage": "https://github.com/FaureAlexis/openai-tier-upgrader#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "openai": "^6.7.0"
+  }
+}
